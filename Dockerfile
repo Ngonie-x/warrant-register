@@ -19,6 +19,8 @@ COPY . /app/
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
+RUN mkdir -p /app/staticfiles /app/media && chmod -R 777 /app/staticfiles /app/media
+
 # Create non-root user
 RUN useradd -m appuser
 USER appuser
