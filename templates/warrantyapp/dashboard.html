@@ -1,0 +1,166 @@
+{% extends 'warrantyapp/base.html' %}
+
+{% block title %}Dashboard - Warranty Centre{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <p class="text-gray-600 mt-1">Overview of warranty registrations</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Registrations -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Total Registrations</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ total_registrations }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Warranties -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Active Warranties</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ registered_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Soon -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Expiring (30 days)</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ expiring_soon }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expired -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Expired</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ expired_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Recent Registrations -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Registrations</h2>
+        </div>
+        <div class="p-6">
+            {% if recent_registrations %}
+            <div class="space-y-4">
+                {% for warranty in recent_registrations %}
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <a href="{% url 'warrantyapp:warranty_detail' warranty.pk %}" class="font-medium text-indigo-600 hover:text-indigo-800">
+                            {{ warranty.asset_name }}
+                        </a>
+                        <p class="text-sm text-gray-500">
+                            Registered by {{ warranty.registered_by_name|default:"Unknown" }}
+                        </p>
+                        <p class="text-xs text-gray-400">{{ warranty.registered_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    <span class="px-2 py-1 text-xs font-medium rounded-full 
+                        {% if warranty.status == 'registered' %}bg-green-100 text-green-800
+                        {% elif warranty.status == 'pending' %}bg-yellow-100 text-yellow-800
+                        {% elif warranty.status == 'expired' %}bg-red-100 text-red-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ warranty.get_status_display }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">No registrations yet</p>
+            {% endif %}
+            <div class="mt-4 text-center">
+                <a href="{% url 'warrantyapp:warranty_list' %}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                    View all warranties →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- By Department -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">By Department</h2>
+        </div>
+        <div class="p-6">
+            {% if by_department %}
+            <div class="space-y-3">
+                {% for item in by_department %}
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-700">{{ item.department }}</span>
+                    <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full">
+                        {{ item.count }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">No department data</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+    <div class="flex flex-wrap gap-4">
+        <a href="{% url 'warrantyapp:warranty_list' %}" 
+           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+            </svg>
+            View All Warranties
+        </a>
+        <a href="{% url 'warrantyapp:expiring_warranties' %}" 
+           class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Expiring Soon
+        </a>
+        <a href="{% url 'warrantyapp:audit_log_list' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            Audit Logs
+        </a>
+    </div>
+</div>
+{% endblock %}
