@@ -8,7 +8,7 @@ echo "for Warranty Registration System"
 echo "======================================"
 
 # Database name
-DB_NAME="${DB_NAME:-warranty_db}"
+DB_NAME="${DB_NAME:-warrant_db}"
 
 cat << 'EOF'
 
