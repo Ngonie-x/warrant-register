@@ -19,6 +19,14 @@ A Django-based warranty registration API and Warranty Centre web application des
                                                                 └──────────────────────────┘
 ```
 
+## Live Demo
+
+The site is hosted on: [server1.eport.ws](http://server1.eport.ws)
+
+**Sample Login Credentials:**
+- **Username:** `eport`
+- **Password:** `3P0rt2025xyz`
+
 ## Features
 
 ### API (api app)
